@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BioSense Control Grid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <main class="app-shell">
+    <section class="hero panel">
+      <div class="hero-copy">
+        <p class="eyebrow">Nothing-inspired environmental telemetry</p>
+        <h1>Biosphere Dashboard</h1>
+        <p class="hero-text">
+          Dual-ESP32 monitoring surface for CO2, liquid pH, enclosure temperature, and probe temperature streams.
+        </p>
+        <div class="hero-accent" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+      <div class="hero-meta">
+        <div class="meta-block">
+          <span class="meta-label">Mode</span>
+          <strong>Community Edition</strong>
+        </div>
+        <div class="meta-block">
+          <span class="meta-label">Updated</span>
+          <strong id="updated-at">--:--:--</strong>
+        </div>
+        <div class="meta-block">
+          <span class="meta-label">Sensor mesh</span>
+          <strong>5 channels / 2 nodes</strong>
+        </div>
+        <div class="meta-block">
+          <span class="meta-label">Source</span>
+          <strong id="source-status">Demo Stream</strong>
+          <div class="source-accent" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="top-grid">
+      <article class="panel sensor-card featured" data-sensor="co2">
+        <div class="card-head">
+          <div>
+            <p class="card-kicker">Air Quality</p>
+            <h2>MH-Z19E CO2</h2>
+          </div>
+          <span class="pill pill-alert">Critical Feed</span>
+        </div>
+        <div class="reading-row">
+          <div>
+            <p class="reading-label">Current</p>
+            <h3><span id="co2-value">0</span><small>ppm</small></h3>
+          </div>
+          <div class="delta" id="co2-delta">+0.0%</div>
+        </div>
+        <canvas id="co2-chart" width="520" height="180"></canvas>
+        <div class="range-bar">
+          <span>Ventilation low</span>
+          <div class="bar-track"><div id="co2-bar" class="bar-fill"></div></div>
+          <span>Ventilation high</span>
+        </div>
+      </article>
+
+      <article class="panel node-panel">
+        <div class="card-head">
+          <div>
+            <p class="card-kicker">Controllers</p>
+            <h2>ESP32 Nodes</h2>
+          </div>
+          <span class="pill">Wi-Fi Mesh</span>
+        </div>
+        <div class="node-list">
+          <div class="node-card">
+            <div class="node-title">
+              <strong>ESP32-A</strong>
+              <span class="status online">Online</span>
+            </div>
+            <p>Handles `MH-Z19E` and `HS-S26P` ambient read cycle.</p>
+            <dl>
+              <div><dt>IP</dt><dd>192.168.4.21</dd></div>
+              <div><dt>Latency</dt><dd>21 ms</dd></div>
+              <div><dt>Uptime</dt><dd>17h 12m</dd></div>
+            </dl>
+          </div>
+          <div class="node-card">
+            <div class="node-title">
+              <strong>ESP32-B</strong>
+              <span class="status sync">Syncing</span>
+            </div>
+            <p>Handles `PE-03` pH electrode and `DS18B20` liquid probe.</p>
+            <dl>
+              <div><dt>IP</dt><dd>192.168.4.22</dd></div>
+              <div><dt>Latency</dt><dd>34 ms</dd></div>
+              <div><dt>Uptime</dt><dd>16h 48m</dd></div>
+            </dl>
+          </div>
+        </div>
+        <div class="dot-matrix" aria-hidden="true"></div>
+      </article>
+    </section>
+
+    <section class="sensor-grid">
+      <article class="panel sensor-card" data-sensor="ambient">
+        <div class="card-head">
+          <div>
+            <p class="card-kicker">Ambient Temperature</p>
+            <h2>HS-S26P</h2>
+          </div>
+          <span class="pill">Stable</span>
+        </div>
+        <div class="reading-row compact">
+          <div>
+            <p class="reading-label">Current</p>
+            <h3><span id="ambient-value">0</span><small>&deg;C</small></h3>
+          </div>
+          <div class="delta" id="ambient-delta">+0.0%</div>
+        </div>
+        <canvas id="ambient-chart" width="320" height="130"></canvas>
+      </article>
+
+      <article class="panel sensor-card" data-sensor="humidity">
+        <div class="card-head">
+          <div>
+            <p class="card-kicker">Ambient Humidity</p>
+            <h2>HS-S26P Humidity</h2>
+          </div>
+          <span class="pill">Climate</span>
+        </div>
+        <div class="reading-row compact">
+          <div>
+            <p class="reading-label">Current</p>
+            <h3><span id="humidity-value">0</span><small>%RH</small></h3>
+          </div>
+          <div class="delta" id="humidity-delta">+0.0%</div>
+        </div>
+        <canvas id="humidity-chart" width="320" height="130"></canvas>
+      </article>
+
+      <article class="panel sensor-card" data-sensor="light">
+        <div class="card-head">
+          <div>
+            <p class="card-kicker">Light Intensity</p>
+            <h2>LDR Sensor</h2>
+          </div>
+          <span class="pill">Illumination</span>
+        </div>
+        <div class="reading-row compact">
+          <div>
+            <p class="reading-label">Current</p>
+            <h3><span id="light-value">0</span><small>%</small></h3>
+          </div>
+          <div class="delta" id="light-delta">+0.0%</div>
+        </div>
+        <canvas id="light-chart" width="320" height="130"></canvas>
+      </article>
+
+      <article class="panel sensor-card" data-sensor="probe">
+        <div class="card-head">
+          <div>
+            <p class="card-kicker">Probe Temperature</p>
+            <h2>DS18B20 / BS-18B20</h2>
+          </div>
+          <span class="pill">Liquid Line</span>
+        </div>
+        <div class="reading-row compact">
+          <div>
+            <p class="reading-label">Current</p>
+            <h3><span id="probe-value">0</span><small>&deg;C</small></h3>
+          </div>
+          <div class="delta" id="probe-delta">+0.0%</div>
+        </div>
+        <canvas id="probe-chart" width="320" height="130"></canvas>
+      </article>
+
+      <article class="panel sensor-card" data-sensor="ph">
+        <div class="card-head">
+          <div>
+            <p class="card-kicker">Acidity</p>
+            <h2>PE-03 pH Electrode</h2>
+          </div>
+          <span class="pill pill-accent">Calibration</span>
+        </div>
+        <div class="reading-row compact">
+          <div>
+            <p class="reading-label">Current</p>
+            <h3><span id="ph-value">0</span><small>pH</small></h3>
+          </div>
+          <div class="delta" id="ph-delta">+0.0%</div>
+        </div>
+        <canvas id="ph-chart" width="320" height="130"></canvas>
+      </article>
+
+      <article class="panel quick-panel">
+        <div class="card-head">
+          <div>
+            <p class="card-kicker">Thresholds</p>
+            <h2>Ops Window</h2>
+          </div>
+        </div>
+        <div class="quick-stats">
+          <div class="quick-stat">
+            <span>CO2</span>
+            <strong>400-1500 ppm</strong>
+          </div>
+          <div class="quick-stat">
+            <span>Ambient</span>
+            <strong>20-28 &deg;C</strong>
+          </div>
+          <div class="quick-stat">
+            <span>Humidity</span>
+            <strong>45-75 %RH</strong>
+          </div>
+          <div class="quick-stat">
+            <span>Light</span>
+            <strong>35-85 %</strong>
+          </div>
+          <div class="quick-stat">
+            <span>Probe</span>
+            <strong>18-24 &deg;C</strong>
+          </div>
+          <div class="quick-stat">
+            <span>pH</span>
+            <strong>5.8-6.8</strong>
+          </div>
+        </div>
+        <div class="footer-glyph" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
